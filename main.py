@@ -10,16 +10,24 @@ from datetime import datetime
 #----------------------Setting variables-------------------------
 
 openQuestions = {}
-keepLearning = 1
+QuizOn = 1
 GlobalDict = {}
 today = datetime.today()
+chosenSubject = ""
 
 
+#----------------------Defining functions-------------------------
 
-#----------------------Open CSV File-------------------------
-with open('./backup/backup.csv', 'r') as csv_file:
+def setUp():
+	global openQuestions
+	global ListofSubjects
+	global chosenSubject
+
+	# Open CSV file
+	with open('./backup/backup.csv', 'r') as csv_file:
 	database = csv.DictReader(csv_file, delimiter=';')
 
+	# Make the csv data available in GlobalDict
 	for line in database :
 		GlobalDict[line['UID']] = {'Frage': line['Frage'], 
 			'Antwort': line['Antwort'],
@@ -31,7 +39,7 @@ with open('./backup/backup.csv', 'r') as csv_file:
 			'Eingabedatum': line['Eingabedatum'],
 		}
 
-# Reads in due items per subject
+	# Generate the list of subjects to choose from
 	ListofSubjects = {}
 	for key, value in GlobalDict.items():
 		if (value['DueDate'] == ''):
@@ -42,7 +50,28 @@ with open('./backup/backup.csv', 'r') as csv_file:
 			else: 
 				ListofSubjects[value["Subject"]] = 1
 
-# Writing a new file
+	# Get user input
+	print("Subject overview:")
+	for key, value in ListofSubjects.items() :
+		print(key, value)
+	
+	chosenSubject = input('Which subject do you want to learn: ') #Wie kann man Auswahlmöglichkeiten geben?
+	print ("Alright, let's start with "  + chosenSubject + "!")
+
+	# Generate list of openQuestions
+
+
+def askQuestion():
+	global openQuestions
+	
+	# Print a (random) question from openQuestions
+
+	# Proposes if the answer is right, lets user decide, and returns Boolean
+
+	# Needs to delete right items from openQuestions and update the GlobalDict
+
+
+def saveNewCSV ():
 	with open('test_writer.csv', 'w') as new_file:
 		fieldnames = ['UID', 'Frage','Subject', 'Antwort', 'DueDate', 'Phase', 'Tausch', 'Eingabedatum', 'Zusatzangaben']
 
@@ -54,48 +83,15 @@ with open('./backup/backup.csv', 'r') as csv_file:
 		 	csv_writer.writerow(value)
 
 
-#----------------------Defining functions-------------------------
-def setUp():
-	global openQuestions
-	global ListofSubjects
-
-	chosenLibrary = ""
-
-	print("Subject overview:")
-
-	for key, value in ListofSubjects.items() :
-		print(key, value)
-
-	def askForLibrary():
-		global chosenLibrary
-		chosenLibrary = input('Which subject do you want to learn: ') #Wie kann man Auswahlmöglichkeiten geben?
-		print ('you entered ' + chosenLibrary)
-	
-	def LoadLibrary():
-		global openQuestions
-		global chosenLibrary
-		pass
-	
-	askForLibrary()
-	LoadLibrary()
-
-def askQuestion():
-	global openQuestions
-	
-	def printQuestion():
-		pass
-
-	def compareResult():
-		pass
-
-	def sortBack():
-		pass
 
 #----------------------Running it-------------------------
-while keepLearning == 1:
+while QuizOn == 1:
 	setUp()
 	while openQuestions.length()>0:
 		askQuestion()
-	keepLearning = input('1 for continue, 0 for end: ')
+	print('Nice, you are done with %s!' %chosenSubject)
+	saveNewCSV()
+	print('Your progress is saved in CSV.')
+	QuizOn = input('Enter 1 to continue with another subject, or 0 to end: ')
 
 
