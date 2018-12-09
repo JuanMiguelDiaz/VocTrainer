@@ -56,7 +56,8 @@ def setUp():
 		print(key, value)
 	
 	chosenSubject = input('Which subject do you want to learn: ') #Wie kann man Auswahlmöglichkeiten geben?
-	print ("Alright, let's start with "  + chosenSubject + "!")
+	message = "Alright, let's start with {}!".format(chosenSubject)
+	print (message)
 
 	# Generate list of openQuestions
 
@@ -87,7 +88,7 @@ def saveNewCSV ():
 #----------------------Running it-------------------------
 while QuizOn == 1:
 	setUp()
-	while openQuestions.length()>0:
+	while len(openQuestions)>0:
 		askQuestion()
 	print('Nice, you are done with %s!' %chosenSubject)
 	saveNewCSV()
