@@ -3,12 +3,17 @@
 import random
 import csv
 
+from datetime import date
+from datetime import time
+from datetime import datetime
+
 #----------------------Setting variables-------------------------
 
-chosenLibrary = ""
 openQuestions = {}
 keepLearning = 1
 GlobalDict = {}
+today = datetime.today()
+
 
 
 #----------------------Open CSV File-------------------------
@@ -20,26 +25,26 @@ with open('./backup/backup.csv', 'r') as csv_file:
 			'Antwort': line['Antwort'],
 			'DueDate': line['DueDate'],
 			'Phase': line['Phase'],
-			'Fach': line['Fach'],
+			'Subject': line['Subject'],
 			'Tausch': line['Tausch'],
 			'Zusatzangaben': line['Zusatzangaben'],
 			'Eingabedatum': line['Eingabedatum'],
 		}
 
-# Reads in the Anzahl pro Fach
-	ListofFach = {}
+# Reads in due items per subject
+	ListofSubjects = {}
 	for key, value in GlobalDict.items():
-		if value["Fach"] in ListofFach.keys() :
-			ListofFach[value["Fach"]] += 1
-		else: 
-			ListofFach[value["Fach"]] = 1
-
-	for key, value in ListofFach.items() :
-		print(key, value)
+		if (value['DueDate'] == ''):
+			pass
+		elif (today >= datetime.strptime((value["DueDate"]+' 00:00:00'),"%d.%m.%y %H:%M:%S")):
+			if value["Subject"] in ListofSubjects.keys() :
+				ListofSubjects[value["Subject"]] += 1
+			else: 
+				ListofSubjects[value["Subject"]] = 1
 
 # Writing a new file
 	with open('test_writer.csv', 'w') as new_file:
-		fieldnames = ['UID', 'Frage','Fach', 'Antwort', 'DueDate', 'Phase', 'Tausch', 'Eingabedatum', 'Zusatzangaben']
+		fieldnames = ['UID', 'Frage','Subject', 'Antwort', 'DueDate', 'Phase', 'Tausch', 'Eingabedatum', 'Zusatzangaben']
 
 		csv_writer = csv.DictWriter(new_file, fieldnames=fieldnames, delimiter=';')
 		csv_writer.writeheader()
@@ -48,16 +53,22 @@ with open('./backup/backup.csv', 'r') as csv_file:
 		 	value['UID'] = key
 		 	csv_writer.writerow(value)
 
-# Got it from here https://youtu.be/q5uM4VKywbA?t=754
 
 #----------------------Defining functions-------------------------
 def setUp():
 	global openQuestions
-	global chosenLibrary
+	global ListofSubjects
+
+	chosenLibrary = ""
+
+	print("Subject overview:")
+
+	for key, value in ListofSubjects.items() :
+		print(key, value)
 
 	def askForLibrary():
 		global chosenLibrary
-		chosenLibrary = input('Which libarary do you want to learn: ') #Wie kann man Auswahlmöglichkeiten geben?
+		chosenLibrary = input('Which subject do you want to learn: ') #Wie kann man Auswahlmöglichkeiten geben?
 		print ('you entered ' + chosenLibrary)
 	
 	def LoadLibrary():
