@@ -25,19 +25,19 @@ def setUp():
 
 	# Open CSV file
 	with open('./backup/backup.csv', 'r') as csv_file:
-	database = csv.DictReader(csv_file, delimiter=';')
+		database = csv.DictReader(csv_file, delimiter=';')
 
-	# Make the csv data available in GlobalDict
-	for line in database :
-		GlobalDict[line['UID']] = {'Frage': line['Frage'], 
-			'Antwort': line['Antwort'],
-			'DueDate': line['DueDate'],
-			'Phase': line['Phase'],
-			'Subject': line['Subject'],
-			'Tausch': line['Tausch'],
-			'Zusatzangaben': line['Zusatzangaben'],
-			'Eingabedatum': line['Eingabedatum'],
-		}
+		# Make the csv data available in GlobalDict
+		for line in database :
+			GlobalDict[line['UID']] = {'Frage': line['Frage'], 
+				'Antwort': line['Antwort'],
+				'DueDate': line['DueDate'],
+				'Phase': line['Phase'],
+				'Subject': line['Subject'],
+				'Tausch': line['Tausch'],
+				'Zusatzangaben': line['Zusatzangaben'],
+				'Eingabedatum': line['Eingabedatum'],
+			}
 
 	# Generate the list of subjects to choose from
 	ListofSubjects = {}
