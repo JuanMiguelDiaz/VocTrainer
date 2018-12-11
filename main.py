@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import random
 import csv
+import sys
 
 from datetime import date
 from datetime import time
@@ -9,9 +10,10 @@ from datetime import datetime
 
 #----------------------Setting variables-------------------------
 
-openQuestions = {}
+# Question: Do single leading underscores make sense for those variables?
+openQuestions = [] # Holds UIDs of open Questions
 QuizOn = 1
-GlobalDict = {}
+GlobalDict = {} # Holds a Dict with UID as key and rest as dict in value.
 today = datetime.today()
 chosenSubject = ""
 
@@ -55,21 +57,39 @@ def setUp():
 	for key, value in ListofSubjects.items() :
 		print(key, value)
 	
-	chosenSubject = input('Which subject do you want to learn: ') #Wie kann man Auswahlmöglichkeiten geben?
+	chosenSubject = raw_input('Which subject do you want to learn: ') #Wie kann man Auswahlmöglichkeiten geben?
 	message = "Alright, let's start with {}!".format(chosenSubject)
 	print (message)
 
 	# Generate list of openQuestions
+	for key, value in GlobalDict.items():
+		if (value['DueDate'] == ''):
+			pass
+		elif (value['Subject'] == chosenSubject) and (today >= datetime.strptime((value["DueDate"]+' 00:00:00'),"%d.%m.%y %H:%M:%S")):
+			openQuestions.append(key)
+	message = "Quiz with {} items is generated.".format(len(openQuestions))
+	print(message)
 
 
-def askQuestion():
+def askRandomQuestion():
 	global openQuestions
+	global GlobalDict
+	global QuizOn
+
+	currentQuestion = openQuestions[random.randint(0,len(openQuestions)-1)]
+	print("---------------------------------------------------------------------")
+	print GlobalDict[currentQuestion]["Frage"]
+	raw_input('Your answer: ')
+	print 'Correct answer: ' + GlobalDict[currentQuestion]["Antwort"]
+	Check = raw_input('Was your answer correct? Type "y" for Yes, "e" for exit: ')
 	
-	# Print a (random) question from openQuestions
-
-	# Proposes if the answer is right, lets user decide, and returns Boolean
-
-	# Needs to delete right items from openQuestions and update the GlobalDict
+	if Check == "y" :
+		openQuestions.remove(currentQuestion)
+		# Needs to delete right items from openQuestions and update the GlobalDict
+	elif Check == "e":
+		QuizOn = 0
+	else:
+		GlobalDict[currentQuestion]['Phase'] = 1
 
 
 def saveNewCSV ():
@@ -84,15 +104,25 @@ def saveNewCSV ():
 		 	csv_writer.writerow(value)
 
 
+def main(): # In the future it could use the csv-name as argument.
+	global QuizOn
+	while QuizOn == 1:
+		setUp()
+		while len(openQuestions)>0:
+			askRandomQuestion()
+			if QuizOn == 0:
+				break
+		print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+		if QuizOn == 0:
+			print 'Okay, quiz canceled.'
+		else:
+			print('Nice, you are done with %s!' %chosenSubject)
+		saveNewCSV()
+		print('Your progress is saved in CSV.')
+		QuizOn = input('Enter 1 to continue with another subject, or 0 to end: ')
+
 
 #----------------------Running it-------------------------
-while QuizOn == 1:
-	setUp()
-	while len(openQuestions)>0:
-		askQuestion()
-	print('Nice, you are done with %s!' %chosenSubject)
-	saveNewCSV()
-	print('Your progress is saved in CSV.')
-	QuizOn = input('Enter 1 to continue with another subject, or 0 to end: ')
-
+if __name__ == '__main__' :
+	sys.exit(main())
 
