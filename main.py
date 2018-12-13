@@ -17,30 +17,63 @@ QuizOn = 1
 GlobalDict = {} # Holds a Dict with UID as key and rest as dict in value.
 today = datetime.today()
 chosenSubject = ""
-
+mode = ""
 
 #----------------------Defining functions-------------------------
 
 def setUp():
-	global openQuestions
-	global ListofSubjects
-	global chosenSubject
+	global mode
+	global GlobalDict
 
 	# Open CSV file
-	with open('./backup/backup.csv', 'r') as csv_file:
+	with open('sample.csv', 'r') as csv_file:
 		database = csv.DictReader(csv_file, delimiter=';')
 
 		# Make the csv data available in GlobalDict
 		for line in database :
-			GlobalDict[line['UID']] = {'Frage': line['Frage'], 
-				'Antwort': line['Antwort'],
+			GlobalDict[line['UID']] = {'Question': line['Question'], 
+				'Answer': line['Answer'],
 				'DueDate': line['DueDate'],
 				'Phase': line['Phase'],
 				'Subject': line['Subject'],
-				'Tausch': line['Tausch'],
-				'Zusatzangaben': line['Zusatzangaben'],
-				'Eingabedatum': line['Eingabedatum'],
+				'Swapped': line['Swapped'],
+				'DateCreated': line['DateCreated'],
 			}
+	
+	print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+	print("Welcome to the Terminal Vocabulary Trainer!")
+
+	# If database is empty, automatically start with inserting vocabulary.
+	if len(GlobalDict.keys()) == 0:
+		mode = "a"
+	else:
+		print("Do you want to quiz 'q' or add vocabulary 'a'?")
+		mode = raw_input("Enter your choice: ")
+
+def setUpAdd():
+	global chosenSubject
+	global GlobalDict
+
+	if len(GlobalDict.keys()) == 0:
+		print("In order to start, let's first add some new vocabulary.")
+		chosenSubject = raw_input("Which subject do you want to start with?")
+		print("The vocabulary you enter will be added this subject.")
+	else:
+		print("This are your current subjects. Choose one or type the name of a new one.")
+		ListofSubjects = {}
+		for key, value in GlobalDict.items():
+			if value["Subject"] in ListofSubjects.keys() :
+				ListofSubjects[value["Subject"]] += 1
+			else: 
+				ListofSubjects[value["Subject"]] = 1
+		for key, value in ListofSubjects.items() :
+			print(key, value)
+		chosenSubject = raw_input("Choose subject:")
+
+def setUpQuiz():	
+	global chosenSubject
+	global openQuestions
+	global GlobalDict
 
 	# Generate the list of subjects to choose from
 	ListofSubjects = {}
@@ -96,14 +129,14 @@ def askRandomQuestion():
 
 	currentQuestion = openQuestions[random.randint(0,len(openQuestions)-1)]
 	print("---------------------------------------------------------------------")
-	if GlobalDict[currentQuestion]["Tausch"] == "" :
-		print GlobalDict[currentQuestion]["Frage"]
+	if GlobalDict[currentQuestion]["Swapped"] == "" :
+		print GlobalDict[currentQuestion]["Question"]
 		raw_input('Your answer: ')
-		print 'Correct answer: ' + GlobalDict[currentQuestion]["Antwort"]
+		print 'Correct answer: ' + GlobalDict[currentQuestion]["Answer"]
 	else:
-		print GlobalDict[currentQuestion]["Antwort"]
+		print GlobalDict[currentQuestion]["Answer"]
 		raw_input('Your answer: ')
-		print 'Correct answer: ' + GlobalDict[currentQuestion]["Frage"]
+		print 'Correct answer: ' + GlobalDict[currentQuestion]["Question"]
 	
 	Check = raw_input('Was your answer correct? Type "y" for Yes, "e" for exit: ')
 	
@@ -124,32 +157,41 @@ def askRandomQuestion():
 
 def saveNewCSV ():
 	with open('test_writer.csv', 'w') as new_file:
-		fieldnames = ['UID', 'Frage','Subject', 'Antwort', 'DueDate', 'Phase', 'Tausch', 'Eingabedatum', 'Zusatzangaben']
+		fieldnames = ['UID', 'Question','Subject', 'Answer', 'DueDate', 'Phase', 'Swapped', 'DateCreated']
 
 		csv_writer = csv.DictWriter(new_file, fieldnames=fieldnames, delimiter=';')
 		csv_writer.writeheader()
 
-		for key, value in GlobalDict.items() :
+		for key, value in GlobalDict.items() : # Potential problem: When empty it still prints an empty raw in csv for some reason
 		 	value['UID'] = key
 		 	csv_writer.writerow(value)
 
 
 def main(): # In the future it could use the csv-name as argument.
 	global QuizOn
+	global mode
 	while QuizOn == 1:
 		setUp()
-		while len(openQuestions)>0:
-			askRandomQuestion()
+		if mode == "q" :
+			setUpQuiz()
+			while len(openQuestions)>0:
+				askRandomQuestion()
+				if QuizOn == 0:
+					break
+			print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 			if QuizOn == 0:
-				break
-		print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-		if QuizOn == 0:
-			print 'Okay, quiz canceled.'
+				print 'Okay, quiz canceled.'
+			else:
+				print('Nice, you are done with %s!' %chosenSubject)
+			saveNewCSV()
+			print('Your progress is saved in CSV.')
+			QuizOn = input('Enter 1 to continue with another subject, or 0 to end: ')
+		elif mode == "a" :
+			setUpAdd()
+			print("Sorry, adding vocabulary is still under construction.")
+			QuizOn = 0
 		else:
-			print('Nice, you are done with %s!' %chosenSubject)
-		saveNewCSV()
-		print('Your progress is saved in CSV.')
-		QuizOn = input('Enter 1 to continue with another subject, or 0 to end: ')
+			print("Oops, this went wrong. Try 'a' to add vocabulary, or 'q' for quiz.")
 
 
 #----------------------Running it-------------------------

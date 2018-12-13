@@ -1,0 +1,9 @@
+UID;Question;Subject;Answer;DueDate;Phase;Swapped;DateCreated
+1;question;German;die Frage;01.01.18;1;;01.01.18
+2;question;Spanish;la pregunta;02.01.18;1;;02.01.18
+3;answer;German;die Antwort;03.01.18;1;;03.01.18
+4;answer;Spanish;la respuesta;04.01.18;1;;04.01.18
+5;swapped;Spanish;cambiado;05.01.18;1;;05.01.18
+6;swapped;Spanish;cambiado;06.01.18;1;swapped;06.01.18
+7;swapped;German;getauscht;05.01.18;1;;05.01.18
+8;swapped;German;getauscht;06.01.18;1;swapped;06.01.18
