@@ -1,4 +1,4 @@
-UID;Frage;Antwort;Fach;Zusatzangaben;Tausch;Phase;Eingabedatum;DueDate
+UID;Frage;Antwort;Subject;Zusatzangaben;Tausch;Phase;Eingabedatum;DueDate
 1;¡Vete!;Geh weg!;ECOS Español;;;6;04.02.18;
 2;¿Hay algo para comer?;Gibt es etwas zu essen?;ECOS Español;;;6;04.02.18;
 3;¿Me traes un zumo?     Sí, ahora te llevo uno.;Bringst du mir einen Saft?     Ja, jetzt bringe ich dir einen.;ECOS Español;;;6;04.02.18;
