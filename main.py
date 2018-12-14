@@ -82,26 +82,21 @@ def setUpQuiz():
 	global chosenSubject
 	global openQuestions
 	global GlobalDict
+	global SubjectList
+	
+	openQuestions = []
+	chosenSubject = raw_input('Which subject do you want to learn: ')
 
-	# Check if any items are due
-	if len(ListofSubjects.keys()) == 0:
-		print('You are all good - no due items today!')
+	# Generate list of openQuestions
+	for key, value in GlobalDict.items():
+		if (value['DueDate'] == ''):
+			pass
+		elif (value['Subject'] == chosenSubject) and (today >= datetime.strptime((value["DueDate"]+' 00:00:00'),"%d.%m.%y %H:%M:%S")):
+			openQuestions.append(key)
+	if len(openQuestions) == 0:
+		print("The subject doesn't exist, or there are no due items.")
 	else:
-		print("Subject overview:")
-		for key, value in ListofSubjects.items() :
-			print(key, value)
-		
-		chosenSubject = raw_input('Which subject do you want to learn: ') #Wie kann man Auswahlmöglichkeiten geben?
-		message = "Alright, let's start with {}!".format(chosenSubject)
-		print (message)
-
-		# Generate list of openQuestions
-		for key, value in GlobalDict.items():
-			if (value['DueDate'] == ''):
-				pass
-			elif (value['Subject'] == chosenSubject) and (today >= datetime.strptime((value["DueDate"]+' 00:00:00'),"%d.%m.%y %H:%M:%S")):
-				openQuestions.append(key)
-		message = "Quiz with {} items is generated.".format(len(openQuestions))
+		message = "Alright, Quiz with {} items is generated.".format(len(openQuestions))
 		print(message)
 
 
