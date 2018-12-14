@@ -18,12 +18,14 @@ GlobalDict = {} # Holds a Dict with UID as key and rest as dict in value.
 today = datetime.today()
 chosenSubject = ""
 mode = ""
+SubjectList = {}
 
 #----------------------Defining functions-------------------------
 
 def setUp():
 	global mode
 	global GlobalDict
+	global SujectList
 
 	# Open CSV file
 	with open('sample.csv', 'r') as csv_file:
@@ -39,14 +41,28 @@ def setUp():
 				'Swapped': line['Swapped'],
 				'DateCreated': line['DateCreated'],
 			}
+
+			# Create subject list to replace ListofSubjects
+			if line["Subject"] not in SubjectList.keys() :
+				SubjectList[line["Subject"]] = {"Total": 0, "Due": 0}
+			SubjectList[line["Subject"]]["Total"] += 1
+			if (line["DueDate"] != "") :
+				if (today >= datetime.strptime((line["DueDate"]),"%d.%m.%y")) :
+					SubjectList[line["Subject"]]["Due"] +=1
 	
-	print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-	print("Welcome to the Terminal Vocabulary Trainer!")
+	#Printing the introduction
+	print("x x x x x x x x x x x x x x x x x x x x x x x x x x ")
+	print("WELCOME to the Terminal Vocabulary Trainer!")
+	print("x x x x x x x x x x x x x x x x x x x x x x x x x x ")
 
 	# If database is empty, automatically start with inserting vocabulary.
 	if len(GlobalDict.keys()) == 0:
+		print("Your vocabulary database seems to be empty :0")
 		mode = "a"
 	else:
+		print("OVERVIEW of your database")
+		for key, value in SubjectList.items() :
+			print key, value
 		print("Do you want to quiz 'q' or add vocabulary 'a'?")
 		mode = raw_input("Enter your choice: ")
 
@@ -59,32 +75,13 @@ def setUpAdd():
 		chosenSubject = raw_input("Which subject do you want to start with?")
 		print("The vocabulary you enter will be added this subject.")
 	else:
-		print("This are your current subjects. Choose one or type the name of a new one.")
-		ListofSubjects = {}
-		for key, value in GlobalDict.items():
-			if value["Subject"] in ListofSubjects.keys() :
-				ListofSubjects[value["Subject"]] += 1
-			else: 
-				ListofSubjects[value["Subject"]] = 1
-		for key, value in ListofSubjects.items() :
-			print(key, value)
+		print("Choose one of your subjects or type the name of a new one.")
 		chosenSubject = raw_input("Choose subject:")
 
 def setUpQuiz():	
 	global chosenSubject
 	global openQuestions
 	global GlobalDict
-
-	# Generate the list of subjects to choose from
-	ListofSubjects = {}
-	for key, value in GlobalDict.items():
-		if (value['DueDate'] == ''):
-			pass
-		elif (today >= datetime.strptime((value["DueDate"]),"%d.%m.%y")):
-			if value["Subject"] in ListofSubjects.keys() :
-				ListofSubjects[value["Subject"]] += 1
-			else: 
-				ListofSubjects[value["Subject"]] = 1
 
 	# Check if any items are due
 	if len(ListofSubjects.keys()) == 0:
@@ -185,7 +182,7 @@ def main(): # In the future it could use the csv-name as argument.
 				print('Nice, you are done with %s!' %chosenSubject)
 			saveNewCSV()
 			print('Your progress is saved in CSV.')
-			QuizOn = input('Enter 1 to continue with another subject, or 0 to end: ')
+			QuizOn = input('Enter 1 to return to start or 0 to end: ')
 		elif mode == "a" :
 			setUpAdd()
 			print("Sorry, adding vocabulary is still under construction.")
