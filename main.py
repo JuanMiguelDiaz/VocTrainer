@@ -31,7 +31,7 @@ def setUp():
 	chosenSubject = ""
 
 	# Open CSV file
-	with open('test_writer.csv', 'r') as csv_file:
+	with open('sample.csv', 'r') as csv_file:
 		database = csv.DictReader(csv_file, delimiter=';')
 
 		# Make the csv data available in GlobalDict
