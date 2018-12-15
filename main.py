@@ -26,9 +26,12 @@ def setUp():
 	global mode
 	global GlobalDict
 	global SujectList
+	global chosenSubject
+
+	chosenSubject = ""
 
 	# Open CSV file
-	with open('sample.csv', 'r') as csv_file:
+	with open('test_writer.csv', 'r') as csv_file:
 		database = csv.DictReader(csv_file, delimiter=';')
 
 		# Make the csv data available in GlobalDict
@@ -48,7 +51,7 @@ def setUp():
 			SubjectList[line["Subject"]]["Total"] += 1
 			if (line["DueDate"] != "") :
 				if (today >= datetime.strptime((line["DueDate"]),"%d.%m.%y")) :
-					SubjectList[line["Subject"]]["Due"] +=1
+					SubjectList[line["Subject"]]["Due"] += 1
 	
 	#Printing the introduction
 	print("x x x x x x x x x x x x x x x x x x x x x x x x x x ")
@@ -76,7 +79,8 @@ def setUpAdd():
 		print("The vocabulary you enter will be added this subject.")
 	else:
 		print("Choose one of your subjects or type the name of a new one.")
-		chosenSubject = raw_input("Choose subject:")
+		chosenSubject = raw_input("Choose subject: ")
+	print("Good to know: Every item will be added also with swapped question/answer-pair.")
 
 def setUpQuiz():	
 	global chosenSubject
@@ -129,8 +133,8 @@ def askRandomQuestion():
 		print GlobalDict[currentQuestion]["Answer"]
 		raw_input('Your answer: ')
 		print 'Correct answer: ' + GlobalDict[currentQuestion]["Question"]
-	
-	Check = raw_input('Was your answer correct? Type "y" for Yes, "e" for exit: ')
+	print("Was your answer correct?")
+	Check = raw_input("Type 'y' if Yes, 'e' for exit: ")
 	
 	if Check == "y" :
 		GlobalDict[currentQuestion].update({'DueDate': updateDueDate(int(GlobalDict[currentQuestion]["Phase"])).strftime("%d.%m.%y")}) #["Phase"]).strptime("%d.%m.%y")
@@ -146,6 +150,36 @@ def askRandomQuestion():
 		GlobalDict[currentQuestion]['Phase'] = 1
 		print 'Oops, item returned to phase 1.'
 
+def AddItem ():
+	global chosenSubject
+	global GlobalDict
+	global QuizOn
+
+	input1 = raw_input("Insert NEW QUESTION (or 0 to end): ")
+	if input1 == "0":
+		QuizOn = 0
+	else:
+		input2 = raw_input('Insert the answer: ')
+
+		nextUID = int(max(GlobalDict, key=int)) + 1
+		GlobalDict[nextUID] = {'Question': input1, 
+					'Answer': input2,
+					'DueDate': today.strftime('%d.%m.%y'),
+					'Phase': 1,
+					'Subject': chosenSubject,
+					'DateCreated': today.strftime('%d.%m.%y'),
+				}
+		nextUID += 1
+		GlobalDict[nextUID] = {'Question': input1, 
+					'Answer': input2,
+					'DueDate': today.strftime('%d.%m.%y'),
+					'Phase': 1,
+					'Subject': chosenSubject,
+					'Swapped': 'swapped',
+					'DateCreated': today.strftime('%d.%m.%y'),
+				}
+		message = 'Nice, new item added to {}'.format(chosenSubject)
+		print message
 
 def saveNewCSV ():
 	with open('test_writer.csv', 'w') as new_file:
@@ -162,6 +196,7 @@ def saveNewCSV ():
 def main(): # In the future it could use the csv-name as argument.
 	global QuizOn
 	global mode
+
 	while QuizOn == 1:
 		setUp()
 		if mode == "q" :
@@ -180,8 +215,11 @@ def main(): # In the future it could use the csv-name as argument.
 			QuizOn = input('Enter 1 to return to start or 0 to end: ')
 		elif mode == "a" :
 			setUpAdd()
-			print("Sorry, adding vocabulary is still under construction.")
-			QuizOn = 0
+			while QuizOn != 0:
+				AddItem()
+			saveNewCSV()
+			print('Your progress is saved in CSV.')
+			QuizOn = input('Enter 1 to return to start or 0 to end: ')
 		else:
 			print("Oops, this went wrong. Try 'a' to add vocabulary, or 'q' for quiz.")
 
