@@ -4,10 +4,7 @@ import random
 import csv
 import sys
 
-from datetime import date
-from datetime import time
-from datetime import datetime
-from datetime import timedelta
+from datetime import date, time, datetime, timedelta
 
 #----------------------Setting variables-------------------------
 
@@ -95,7 +92,7 @@ def setUpQuiz():
 	for key, value in GlobalDict.items():
 		if (value['DueDate'] == ''):
 			pass
-		elif (value['Subject'] == chosenSubject) and (today >= datetime.strptime((value["DueDate"]+' 00:00:00'),"%d.%m.%y %H:%M:%S")):
+		elif (value['Subject'] == chosenSubject) and (today >= datetime.strptime(value["DueDate"],"%d.%m.%y")):
 			openQuestions.append(key)
 	if len(openQuestions) == 0:
 		print("The subject doesn't exist, or there are no due items.")
@@ -182,7 +179,7 @@ def AddItem ():
 		print message
 
 def saveNewCSV ():
-	with open('test_writer.csv', 'w') as new_file:
+	with open('sample.csv', 'w') as new_file:
 		fieldnames = ['UID', 'Question','Subject', 'Answer', 'DueDate', 'Phase', 'Swapped', 'DateCreated']
 
 		csv_writer = csv.DictWriter(new_file, fieldnames=fieldnames, delimiter=';')
