@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 import random
 import csv
@@ -123,13 +122,13 @@ def askRandomQuestion():
 	currentQuestion = openQuestions[random.randint(0,len(openQuestions)-1)]
 	print("---------------------------------------------------------------------")
 	if GlobalDict[currentQuestion]["Swapped"] == "" :
-		print GlobalDict[currentQuestion]["Question"]
-		raw_input('Your answer: ')
-		print 'Correct answer: ' + GlobalDict[currentQuestion]["Answer"]
+		print 'QUESTION: ' + GlobalDict[currentQuestion]["Question"]
+		raw_input('YOUR ANSWER: ')
+		print 'CORRECT ANSWER: ' + GlobalDict[currentQuestion]["Answer"]
 	else:
-		print GlobalDict[currentQuestion]["Answer"]
-		raw_input('Your answer: ')
-		print 'Correct answer: ' + GlobalDict[currentQuestion]["Question"]
+		print 'QUESTION: ' + GlobalDict[currentQuestion]["Answer"]
+		raw_input('YOUR ANSWER: ')
+		print 'CORRECT ANSWER: ' + GlobalDict[currentQuestion]["Question"]
 	print("Was your answer correct?")
 	Check = raw_input("Type 'y' if Yes, 'e' for exit: ")
 	
@@ -146,6 +145,8 @@ def askRandomQuestion():
 	else:
 		GlobalDict[currentQuestion]['Phase'] = 1
 		print 'Oops, item returned to phase 1.'
+		print 'Practice makes perfect.'
+		raw_input('Type the right answer again: ')
 
 def AddItem ():
 	global chosenSubject
