@@ -17,7 +17,7 @@ The tool allows you not only to quiz, but also to add new vocabulary in individu
 The project comes with a sample file called 'sample.csv'. If you want to start using VocTrainer from scratch, simply replace the reference to the 'sample.csv' in line 30 and 183 of 'main.py' to the 'empty.csv', which is an empty template that you can start to fill with your own vocabulary.
 
 ## The interval-systmatic
-The quiz is based on a **phase-based interval-systematic**. In short, every item starts in phase 1 and enters the next phase, when answered right. The interval depends on the current phase of the item:
+The quiz is based on a phase-based interval-systematic. In short, every item starts in phase 1 and enters the next phase, when answered right. The interval depends on the current phase of the item:
 
 Learning Phase* | Days until next quiz
 --- | ---
