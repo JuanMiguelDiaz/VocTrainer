@@ -107,11 +107,11 @@ def askRandomQuestion():
 
 	def updateDueDate(currentPhase):
 		if currentPhase == 1:
-			return datetime.now() + timedelta(days=3)
+			return datetime.now() + timedelta(days=1)
 		elif currentPhase == 2:
-			return datetime.now() + timedelta(days=10)
+			return datetime.now() + timedelta(days=3)
 		elif currentPhase == 3:
-			return datetime.now() + timedelta(days=30)
+			return datetime.now() + timedelta(days=10)
 		elif currentPhase == 4:
 			return datetime.now() + timedelta(days=30)
 		elif currentPhase == 5:
