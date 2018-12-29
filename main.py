@@ -25,6 +25,8 @@ def setUp():
 	global chosenSubject
 
 	chosenSubject = ""
+	GlobalDict = {}
+	SubjectList = {}
 
 	# Open CSV file
 	with open('sample.csv', 'r') as csv_file:
@@ -165,6 +167,7 @@ def AddItem ():
 					'DueDate': today.strftime('%d.%m.%y'),
 					'Phase': 1,
 					'Subject': chosenSubject,
+					'Swapped': "",
 					'DateCreated': today.strftime('%d.%m.%y'),
 				}
 		nextUID += 1
