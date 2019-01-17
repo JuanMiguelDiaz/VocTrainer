@@ -5,7 +5,7 @@ The tool allows you not only to quiz, but also to add new vocabulary in individu
 
 
 ## Prerequisites
-* To VocTrainer you need Python 2.7 which is pre-installed on every Mac. Note that Python 3 won't work as the program uses Pyhton 2.7 features like `raw_input`
+* To use VocTrainer you need Python 2.7 which is pre-installed on every Mac. Note that Python 3 won't work as the program uses Pyhton 2.7 features like `raw_input`
 * Basic command-line skills. If you never used your Terminal, check out the basic commands [here](https://github.com/0nn0/terminal-mac-cheatsheet#core-commands) and your are good to go.
 
 ## How to start it
