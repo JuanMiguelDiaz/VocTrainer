@@ -5,16 +5,17 @@ The tool allows you not only to quiz, but also to add new vocabulary in individu
 
 
 ## Prerequisites
-* To use VocTrainer you need Python 2.7 which is pre-installed on every Mac. Note that Python 3 won't work as the program uses Pyhton 2.7 features like `raw_input`
+To use VocTrainer you need... 
+* Python3 installed
 * Basic command-line skills. If you never used your Terminal, check out the basic commands [here](https://github.com/0nn0/terminal-mac-cheatsheet#core-commands) and your are good to go.
 
 ## How to start it
 1. Download this folder.
 2. Open your Terminal (or any other command-line tool) and navigate to the downloaded folder.
-3. Start the main.py using `python2.7 main.py`
+3. Start the main.py using `python3 main.py`
 
 ## Set up your libary
-The project comes with a sample file called 'sample.csv'. If you want to start using VocTrainer from scratch, simply replace the reference to the 'sample.csv' in line 30 and 183 of 'main.py' to the 'empty.csv', which is an empty template that you can start to fill with your own vocabulary.
+The project comes with a sample file called 'sample.csv'. If you want to start using VocTrainer from scratch, simply replace the reference to the 'sample.csv' in line 30 and 183 of 'main.py' to the 'empty.csv', which is an empty template that you can fill with your own vocabulary.
 
 ## The interval-systmatic
 The quiz is based on a phase-based interval-systematic. In short, every item starts in phase 1 and enters the next phase, when answered right. The interval depends on the current phase of the item:
