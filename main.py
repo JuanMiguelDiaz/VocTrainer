@@ -63,9 +63,9 @@ def setUp():
 	else:
 		print("OVERVIEW of your database")
 		for key, value in SubjectList.items() :
-			print key, value
+			print(key, value)
 		print("Do you want to quiz 'q' or add vocabulary 'a'?")
-		mode = raw_input("Enter your choice: ")
+		mode = input("Enter your choice: ")
 
 def setUpAdd():
 	global chosenSubject
@@ -73,11 +73,11 @@ def setUpAdd():
 
 	if len(GlobalDict.keys()) == 0:
 		print("In order to start, let's first add some new vocabulary.")
-		chosenSubject = raw_input("Which subject do you want to start with?")
+		chosenSubject = input("Which subject do you want to start with?")
 		print("The vocabulary you enter will be added this subject.")
 	else:
 		print("Choose one of your subjects or type the name of a new one.")
-		chosenSubject = raw_input("Choose subject: ")
+		chosenSubject = input("Choose subject: ")
 	print("Good to know: Every item will be added also with swapped question/answer-pair.")
 
 def setUpQuiz():	
@@ -87,7 +87,7 @@ def setUpQuiz():
 	global SubjectList
 	
 	openQuestions = []
-	chosenSubject = raw_input('Which subject do you want to learn: ')
+	chosenSubject = input('Which subject do you want to learn: ')
 
 	# Generate list of openQuestions
 	for key, value in GlobalDict.items():
@@ -124,15 +124,15 @@ def askRandomQuestion():
 	currentQuestion = openQuestions[random.randint(0,len(openQuestions)-1)]
 	print("---------------------------------------------------------------------")
 	if GlobalDict[currentQuestion]["Swapped"] == "" :
-		print 'QUESTION: ' + GlobalDict[currentQuestion]["Question"]
-		raw_input('YOUR ANSWER: ')
-		print 'CORRECT ANSWER: ' + GlobalDict[currentQuestion]["Answer"]
+		print('QUESTION: ' + GlobalDict[currentQuestion]["Question"])
+		input('YOUR ANSWER: ')
+		print('CORRECT ANSWER: ' + GlobalDict[currentQuestion]["Answer"])
 	else:
-		print 'QUESTION: ' + GlobalDict[currentQuestion]["Answer"]
-		raw_input('YOUR ANSWER: ')
-		print 'CORRECT ANSWER: ' + GlobalDict[currentQuestion]["Question"]
+		print('QUESTION: ' + GlobalDict[currentQuestion]["Answer"])
+		input('YOUR ANSWER: ')
+		print('CORRECT ANSWER: ' + GlobalDict[currentQuestion]["Question"])
 	print("Was your answer correct?")
-	Check = raw_input("Type 'y' if Yes, 'e' for exit: ")
+	Check = input("Type 'y' if Yes, 'e' for exit: ")
 	
 	if Check == "y" :
 		GlobalDict[currentQuestion].update({'DueDate': updateDueDate(int(GlobalDict[currentQuestion]["Phase"])).strftime("%d.%m.%y")}) #["Phase"]).strptime("%d.%m.%y")
@@ -146,20 +146,20 @@ def askRandomQuestion():
 		QuizOn = 0
 	else:
 		GlobalDict[currentQuestion]['Phase'] = 1
-		print 'Oops, item returned to phase 1.'
-		print 'Practice makes perfect.'
-		raw_input('Type the right answer again: ')
+		print('Oops, item returned to phase 1.')
+		print('Practice makes perfect.')
+		input('Type the right answer again: ')
 
 def AddItem ():
 	global chosenSubject
 	global GlobalDict
 	global QuizOn
 
-	input1 = raw_input("Insert NEW QUESTION (or 0 to end): ")
+	input1 = input("Insert NEW QUESTION (or 0 to end): ")
 	if input1 == "0":
 		QuizOn = 0
 	else:
-		input2 = raw_input('Insert the answer: ')
+		input2 = input('Insert the answer: ')
 
 		nextUID = int(max(GlobalDict, key=int)) + 1
 		GlobalDict[nextUID] = {'Question': input1, 
@@ -180,7 +180,7 @@ def AddItem ():
 					'DateCreated': today.strftime('%d.%m.%y'),
 				}
 		message = 'Nice, new item added to {}'.format(chosenSubject)
-		print message
+		print(message)
 
 def saveNewCSV ():
 	with open('sample.csv', 'w') as new_file:
@@ -206,9 +206,9 @@ def main(): # In the future it could use the csv-name as argument.
 				askRandomQuestion()
 				if QuizOn == 0:
 					break
-			print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+			print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
 			if QuizOn == 0:
-				print 'Okay, quiz canceled.'
+				print('Okay, quiz canceled.')
 			else:
 				print('Nice, you are done with %s!' %chosenSubject)
 			saveNewCSV()
