@@ -52,9 +52,11 @@ def setUp():
 					SubjectList[line["Subject"]]["Due"] += 1
 	
 	#Printing the introduction
-	print("x x x x x x x x x x x x x x x x x x x x x x x x x x ")
+	print("---------------------------------------------------------------------")
+	print("---------------------------------------------------------------------")
 	print("WELCOME to the Terminal Vocabulary Trainer!")
-	print("x x x x x x x x x x x x x x x x x x x x x x x x x x ")
+	print("---------------------------------------------------------------------")
+	print("---------------------------------------------------------------------")
 
 	# If database is empty, automatically start with inserting vocabulary.
 	if len(GlobalDict.keys()) == 0:
@@ -213,7 +215,7 @@ def main(): # In the future it could use the csv-name as argument.
 				print('Nice, you are done with %s!' %chosenSubject)
 			saveNewCSV()
 			print('Your progress is saved in CSV.')
-			QuizOn = input('Enter 1 to return to start or 0 to end: ')
+			QuizOn = input('Enter 1 to return to start or 0 to end: ') #TODO: Needs fix as the input "1" currently ends to program.
 		elif mode == "a" :
 			setUpAdd()
 			while QuizOn != 0:
