@@ -1,13 +1,15 @@
 import random
 import csv
+import sys
 from datetime import datetime, timedelta
+
 
 def load_data_from_csv(filename):
     try:
         data = {}
         subject_list = {}
 
-        with open(filename, 'r') as csv_file:
+        with open(filename, 'r', encoding='ISO-8859-1') as csv_file:
             database = csv.DictReader(csv_file, delimiter=';')
 
             for line in database:
@@ -113,7 +115,7 @@ def add_item(chosen_subject, global_dict):
         return True
 
 def save_to_csv(filename, global_dict):
-    with open(filename, 'w') as new_file:
+    with open(filename, 'w', newline='', encoding='ISO-8859-1') as new_file:
         fieldnames = ['UID', 'Question', 'Subject', 'Answer', 'DueDate', 'Phase', 'Swapped', 'DateCreated']
         csv_writer = csv.DictWriter(new_file, fieldnames=fieldnames, delimiter=';')
         csv_writer.writeheader()
@@ -123,6 +125,9 @@ def save_to_csv(filename, global_dict):
             csv_writer.writerow(value)
 
 def main():
+    # Set console encoding to handle special characters
+    sys.stdout.reconfigure(encoding='utf-8')
+
     quiz_on = 1
 
     while quiz_on == 1:
@@ -141,7 +146,7 @@ def main():
         else:
             print("OVERVIEW of your quiz items by subject")
             for key, value in subject_list.items():
-                print(key, value)
+                print(f"{key}: {value}")
             print("Do you want to quiz 'q' or add vocabulary 'a'?")
             mode = input("Enter your choice: ")
 
@@ -185,7 +190,7 @@ def main():
             quiz_on = int(input('Enter 1 to return to start or 0 to end: '))
 
         else:
-            print("Oops, this went wrong. Try 'a' to add vocabulary, or 'q' for quiz.")
+            print("❌ Oops, wrong input. Try 'a' to add vocabulary, or 'q' for quiz.")
 
 if __name__ == '__main__':
     main()
