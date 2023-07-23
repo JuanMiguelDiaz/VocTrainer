@@ -35,4 +35,4 @@ To use VocTrainer you need...
 3. Start the main.py using `python3 main.py`
 
 ## Set up your library
-The project comes with a sample file called 'sample.csv'. If you want to start using VocTrainer from scratch, simply replace the reference to the 'sample.csv' in line 30 and 183 of 'main.py' to the 'empty.csv', which is an empty template that you can fill with your own vocabulary.
+The project comes with a sample file called 'sample.csv'. If you want to start using VocTrainer from scratch, simply replace the references to the 'sample.csv' of 'main.py' to the 'empty.csv', which is an empty template that you can fill with your own vocabulary.
