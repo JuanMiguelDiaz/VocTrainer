@@ -1,233 +1,191 @@
-# -*- coding: utf-8 -*-
 import random
 import csv
-import sys
+from datetime import datetime, timedelta
 
-from datetime import date, time, datetime, timedelta
+def load_data_from_csv(filename):
+    try:
+        data = {}
+        subject_list = {}
 
-#----------------------Setting variables-------------------------
+        with open(filename, 'r') as csv_file:
+            database = csv.DictReader(csv_file, delimiter=';')
 
-# Question: Do single leading underscores make sense for those variables?
-openQuestions = [] # Holds UIDs of open Questions
-QuizOn = 1
-GlobalDict = {} # Holds a Dict with UID as key and rest as dict in value.
-today = datetime.today()
-chosenSubject = ""
-mode = ""
-SubjectList = {}
+            for line in database:
+                uid = int(line['UID'])
+                data[uid] = {
+                    'Question': line['Question'],
+                    'Answer': line['Answer'],
+                    'DueDate': line['DueDate'],
+                    'Phase': int(line['Phase']),
+                    'Subject': line['Subject'],
+                    'Swapped': line['Swapped'],
+                    'DateCreated': line['DateCreated'],
+                }
 
-#----------------------Defining functions-------------------------
+                subject = line['Subject']
+                subject_list.setdefault(subject, {"Total": 0, "Due": 0})
+                subject_list[subject]["Total"] += 1
+                if line["DueDate"] != "" and datetime.today() >= datetime.strptime(line["DueDate"], "%Y-%m-%d"):
+                    subject_list[subject]["Due"] += 1
 
-def setUp():
-	global mode
-	global GlobalDict
-	global SujectList
-	global chosenSubject
+        return data, subject_list
+    except FileNotFoundError:
+        print(f"Error: CSV file '{filename}' not found.")
+        return {}, {}
+    except csv.Error:
+        print(f"Error: Malformed CSV file '{filename}'.")
+        return {}, {}
 
-	chosenSubject = ""
-	GlobalDict = {}
-	SubjectList = {}
+def update_due_date(current_phase):
+    due_dates = [1, 3, 10, 30, 90]
+    if current_phase <= len(due_dates):
+        return datetime.now() + timedelta(days=due_dates[current_phase - 1])
+    return ''
 
-	# Open CSV file
-	with open('sample.csv', 'r') as csv_file:
-		database = csv.DictReader(csv_file, delimiter=';')
+def ask_random_question(open_questions, global_dict):
+    if not open_questions:
+        print("The subject doesn't exist, or there are no due items.")
+        return False
 
-		# Make the csv data available in GlobalDict
-		for line in database :
-			GlobalDict[line['UID']] = {'Question': line['Question'], 
-				'Answer': line['Answer'],
-				'DueDate': line['DueDate'],
-				'Phase': line['Phase'],
-				'Subject': line['Subject'],
-				'Swapped': line['Swapped'],
-				'DateCreated': line['DateCreated'],
-			}
+    current_question = random.choice(open_questions)
+    print("---------------------------------------------------------------------")
+    question_key = "Answer" if global_dict[current_question]["Swapped"] else "Question"
+    print('QUESTION: ' + global_dict[current_question][question_key])
+    user_answer = input('YOUR ANSWER: ')
+    print('CORRECT ANSWER: ' + global_dict[current_question]["Answer"] if question_key == "Question" else global_dict[current_question]["Question"])
+    print("Was your answer correct?")
+    check = input("Type 'y' if your answer is correct, 'e' for exit \nType any other key if your answer was wrong: ")
 
-			# Create subject list to replace ListofSubjects
-			if line["Subject"] not in SubjectList.keys() :
-				SubjectList[line["Subject"]] = {"Total": 0, "Due": 0}
-			SubjectList[line["Subject"]]["Total"] += 1
-			if (line["DueDate"] != "") :
-				if (today >= datetime.strptime((line["DueDate"]),"%d.%m.%y")) :
-					SubjectList[line["Subject"]]["Due"] += 1
-	
-	#Printing the introduction
-	print("---------------------------------------------------------------------")
-	print("---------------------------------------------------------------------")
-	print("WELCOME to the Terminal Vocabulary Trainer!")
-	print("---------------------------------------------------------------------")
-	print("---------------------------------------------------------------------")
+    if check.lower() == "y":
+        current_phase = global_dict[current_question]["Phase"]
+        if current_phase >= 5:
+            print("Congratulations! You have mastered this item and have it in your long-term memory.")
+            global_dict[current_question]["DueDate"] = ""
+        else:
+            global_dict[current_question]["DueDate"] = update_due_date(current_phase).strftime("%Y-%m-%d")
+            global_dict[current_question]["Phase"] += 1
 
-	# If database is empty, automatically start with inserting vocabulary.
-	if len(GlobalDict.keys()) == 0:
-		print("Your vocabulary database seems to be empty :0")
-		mode = "a"
-	else:
-		print("OVERVIEW of your database")
-		for key, value in SubjectList.items() :
-			print(key, value)
-		print("Do you want to quiz 'q' or add vocabulary 'a'?")
-		mode = input("Enter your choice: ")
+        open_questions.remove(current_question)
+        if global_dict[current_question]["DueDate"]:
+            print(f'Nice, new due date is {global_dict[current_question]["DueDate"]}')
+    elif check.lower() == "e":
+        return False
+    else:
+        global_dict[current_question]["Phase"] = 1
+        print('Oops, item returned to phase 1. We will try this later today.')
+        input('Type the right answer again to practice: ')
 
-def setUpAdd():
-	global chosenSubject
-	global GlobalDict
-
-	if len(GlobalDict.keys()) == 0:
-		print("In order to start, let's first add some new vocabulary.")
-		chosenSubject = input("Which subject do you want to start with?")
-		print("The vocabulary you enter will be added this subject.")
-	else:
-		print("Choose one of your subjects or type the name of a new one.")
-		chosenSubject = input("Choose subject: ")
-	print("Good to know: Every item will be added also with swapped question/answer-pair.")
-
-def setUpQuiz():	
-	global chosenSubject
-	global openQuestions
-	global GlobalDict
-	global SubjectList
-	
-	openQuestions = []
-	chosenSubject = input('Which subject do you want to learn: ')
-
-	# Generate list of openQuestions
-	for key, value in GlobalDict.items():
-		if (value['DueDate'] == ''):
-			pass
-		elif (value['Subject'] == chosenSubject) and (today >= datetime.strptime(value["DueDate"],"%d.%m.%y")):
-			openQuestions.append(key)
-	if len(openQuestions) == 0:
-		print("The subject doesn't exist, or there are no due items.")
-	else:
-		message = "Alright, Quiz with {} items is generated.".format(len(openQuestions))
-		print(message)
+    return True
 
 
-def askRandomQuestion():
-	global openQuestions
-	global GlobalDict
-	global QuizOn
+def add_item(chosen_subject, global_dict):
+    try:
+        input1 = input("Insert NEW QUESTION (or 0 to end): ")
+        if input1 == "0":
+            return False
 
-	def updateDueDate(currentPhase):
-		if currentPhase == 1:
-			return datetime.now() + timedelta(days=1)
-		elif currentPhase == 2:
-			return datetime.now() + timedelta(days=3)
-		elif currentPhase == 3:
-			return datetime.now() + timedelta(days=10)
-		elif currentPhase == 4:
-			return datetime.now() + timedelta(days=30)
-		elif currentPhase == 5:
-			return datetime.now() + timedelta(days=90)
-		elif currentPhase == 6:
-			return ''
+        input2 = input('Insert the answer: ')
 
-	currentQuestion = openQuestions[random.randint(0,len(openQuestions)-1)]
-	print("---------------------------------------------------------------------")
-	if GlobalDict[currentQuestion]["Swapped"] == "" :
-		print('QUESTION: ' + GlobalDict[currentQuestion]["Question"])
-		input('YOUR ANSWER: ')
-		print('CORRECT ANSWER: ' + GlobalDict[currentQuestion]["Answer"])
-	else:
-		print('QUESTION: ' + GlobalDict[currentQuestion]["Answer"])
-		input('YOUR ANSWER: ')
-		print('CORRECT ANSWER: ' + GlobalDict[currentQuestion]["Question"])
-	print("Was your answer correct?")
-	Check = input("Type 'y' if Yes, 'e' for exit: ")
-	
-	if Check == "y" :
-		GlobalDict[currentQuestion].update({'DueDate': updateDueDate(int(GlobalDict[currentQuestion]["Phase"])).strftime("%d.%m.%y")}) #["Phase"]).strptime("%d.%m.%y")
-		newPhase = int(GlobalDict[currentQuestion]['Phase'])+1
-		GlobalDict[currentQuestion].update({'Phase': newPhase})
-		openQuestions.remove(currentQuestion)
-		message = 'Nice, new due date is {}'.format(GlobalDict[currentQuestion]["DueDate"])
-		print(message)
-		# Needs to delete right items from openQuestions and update the GlobalDict
-	elif Check == "e":
-		QuizOn = 0
-	else:
-		GlobalDict[currentQuestion]['Phase'] = 1
-		print('Oops, item returned to phase 1.')
-		print('Practice makes perfect.')
-		input('Type the right answer again: ')
+        next_uid = max(global_dict, default=0) + 1
+        global_dict[next_uid] = {
+            'Question': input1,
+            'Answer': input2,
+            'DueDate': datetime.today().strftime('%Y-%m-%d'),
+            'Phase': 1,
+            'Subject': chosen_subject,
+            'Swapped': "",
+            'DateCreated': datetime.today().strftime('%Y-%m-%d'),
+        }
+        next_uid += 1
+        global_dict[next_uid] = {
+            'Question': input1,
+            'Answer': input2,
+            'DueDate': datetime.today().strftime('%Y-%m-%d'),
+            'Phase': 1,
+            'Subject': chosen_subject,
+            'Swapped': 'swapped',
+            'DateCreated': datetime.today().strftime('%Y-%m-%d'),
+        }
+        print(f'Nice, new item added to {chosen_subject}')
+        return True
+    except ValueError:
+        print("Error: Invalid input. Please enter a valid question and answer.")
+        return True
 
-def AddItem ():
-	global chosenSubject
-	global GlobalDict
-	global QuizOn
+def save_to_csv(filename, global_dict):
+    with open(filename, 'w') as new_file:
+        fieldnames = ['UID', 'Question', 'Subject', 'Answer', 'DueDate', 'Phase', 'Swapped', 'DateCreated']
+        csv_writer = csv.DictWriter(new_file, fieldnames=fieldnames, delimiter=';')
+        csv_writer.writeheader()
 
-	input1 = input("Insert NEW QUESTION (or 0 to end): ")
-	if input1 == "0":
-		QuizOn = 0
-	else:
-		input2 = input('Insert the answer: ')
+        for key, value in global_dict.items():
+            value['UID'] = key
+            csv_writer.writerow(value)
 
-		nextUID = int(max(GlobalDict, key=int)) + 1
-		GlobalDict[nextUID] = {'Question': input1, 
-					'Answer': input2,
-					'DueDate': today.strftime('%d.%m.%y'),
-					'Phase': 1,
-					'Subject': chosenSubject,
-					'Swapped': "",
-					'DateCreated': today.strftime('%d.%m.%y'),
-				}
-		nextUID += 1
-		GlobalDict[nextUID] = {'Question': input1, 
-					'Answer': input2,
-					'DueDate': today.strftime('%d.%m.%y'),
-					'Phase': 1,
-					'Subject': chosenSubject,
-					'Swapped': 'swapped',
-					'DateCreated': today.strftime('%d.%m.%y'),
-				}
-		message = 'Nice, new item added to {}'.format(chosenSubject)
-		print(message)
+def main():
+    quiz_on = 1
 
-def saveNewCSV ():
-	with open('sample.csv', 'w') as new_file:
-		fieldnames = ['UID', 'Question','Subject', 'Answer', 'DueDate', 'Phase', 'Swapped', 'DateCreated']
+    while quiz_on == 1:
+        chosen_subject = ""
+        global_dict, subject_list = load_data_from_csv('sample.csv')
 
-		csv_writer = csv.DictWriter(new_file, fieldnames=fieldnames, delimiter=';')
-		csv_writer.writeheader()
+        print("---------------------------------------------------------------------")
+        print("---------------------------------------------------------------------")
+        print("WELCOME to the Terminal Vocabulary Trainer!")
+        print("---------------------------------------------------------------------")
+        print("---------------------------------------------------------------------")
 
-		for key, value in GlobalDict.items() : # Potential problem: When empty it still prints an empty raw in csv for some reason
-		 	value['UID'] = key
-		 	csv_writer.writerow(value)
+        if not global_dict:
+            print("Your vocabulary database seems to be empty 😮")
+            mode = "a"
+        else:
+            print("OVERVIEW of your quiz items by subject")
+            for key, value in subject_list.items():
+                print(key, value)
+            print("Do you want to quiz 'q' or add vocabulary 'a'?")
+            mode = input("Enter your choice: ")
 
+        if mode == "q":
+            chosen_subject = input('Which subject do you want to practice (pick one from the list above or create a new one): ')
 
-def main(): # In the future it could use the csv-name as argument.
-	global QuizOn
-	global mode
+            open_questions = [key for key, value in global_dict.items() if value["DueDate"] != "" and value["Subject"] == chosen_subject and datetime.today() >= datetime.strptime(value["DueDate"], "%Y-%m-%d")]
 
-	while QuizOn == 1:
-		setUp()
-		if mode == "q" :
-			setUpQuiz()
-			while len(openQuestions)>0:
-				askRandomQuestion()
-				if QuizOn == 0:
-					break
-			print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-			if QuizOn == 0:
-				print('Okay, quiz canceled.')
-			else:
-				print('Nice, you are done with %s!' %chosenSubject)
-			saveNewCSV()
-			print('Your progress is saved in CSV.')
-			QuizOn = input('Enter 1 to return to start or 0 to end: ') #TODO: Needs fix as the input "1" currently ends to program.
-		elif mode == "a" :
-			setUpAdd()
-			while QuizOn != 0:
-				AddItem()
-			saveNewCSV()
-			print('Your progress is saved in CSV.')
-			QuizOn = input('Enter 1 to return to start or 0 to end: ')
-		else:
-			print("Oops, this went wrong. Try 'a' to add vocabulary, or 'q' for quiz.")
+            if not open_questions:
+                print("The subject doesn't exist, or there are no due items.")
+            else:
+                message = f"Alright, Quiz with {len(open_questions)} items is generated."
+                print(message)
 
+            while len(open_questions) > 0:
+                quiz_on = ask_random_question(open_questions, global_dict)
+                if not quiz_on:
+                    break
 
-#----------------------Running it-------------------------
-if __name__ == '__main__' :
-	sys.exit(main())
+            print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+            if not quiz_on:
+                print('Okay, quiz canceled.')
+            else:
+                print(f'Nice, you are done with your {chosen_subject} quiz for today!🎉')
+            save_to_csv('sample.csv', global_dict)
+            print('Your progress is saved in CSV.')
+            quiz_on = int(input('Enter 1 to return to start or 0 to end: '))
 
+        elif mode == "a":
+            if not global_dict:
+                print("In order to start, let's first add some new vocabulary.")
+            else:
+                print("Choose one of your subjects or type the name of a new one.")
+            chosen_subject = input("Choose subject: ")
+
+            while quiz_on != 0:
+                quiz_on = add_item(chosen_subject, global_dict)
+
+            save_to_csv('sample.csv', global_dict)
+            print('Your progress is saved in CSV.')
+            quiz_on = int(input('Enter 1 to return to start or 0 to end: '))
+
+        else:
+            print("Oops, this went wrong. Try 'a' to add vocabulary, or 'q' for quiz.")
+
+if __name__ == '__main__':
+    main()

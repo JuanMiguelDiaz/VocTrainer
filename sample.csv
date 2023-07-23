@@ -1,17 +1,13 @@
 UID;Question;Subject;Answer;DueDate;Phase;Swapped;DateCreated
-1;question;German;die Frage;01.01.18;1;;01.01.18
-2;question;Spanish;la pregunta;02.01.18;1;;02.01.18
-3;answer;German;die Antwort;03.01.18;1;;03.01.18
-4;answer;Spanish;la respuesta;13.07.23;2;;04.01.18
-5;swapped;Spanish;cambiado;05.01.18;1;;05.01.18
-6;swapped;Spanish;cambiado;06.01.18;1;swapped;06.01.18
-7;swapped;German;getauscht;05.01.18;1;;05.01.18
-8;swapped;German;getauscht;06.01.18;1;swapped;06.01.18
-9;Mein Name ist Jean.;Spanish;Mi nombre es Jean.;13.07.23;2;;12.07.23
-10;Mein Name ist Jean.;Spanish;Mi nombre es Jean.;12.07.23;1;swapped;12.07.23
-11;1;Testing;2;13.07.23;2;;12.07.23
-12;1;Testing;2;13.07.23;2;swapped;12.07.23
-13;3;Testing;4;12.07.23;1;;12.07.23
-14;3;Testing;4;12.07.23;1;swapped;12.07.23
-15;5;Testing;6;12.07.23;1;;12.07.23
-16;5;Testing;6;12.07.23;1;swapped;12.07.23
+1;the lion;Demo German;der Loewe;2023-06-01;1;;2023-06-01
+2;the lion;Demo Spanish;el leon;2023-06-01;1;;2023-06-01
+3;my name;Demo German;mein Name;2023-06-01;1;;2023-06-01
+4;my name;Demo Spanish;mi nomre;2023-06-01;1;;2023-06-01
+5;the lion;Demo German;der Loewe;2023-06-01;1;swapped;2023-06-01
+6;the lion;Demo Spanish;el leon;2023-06-01;1;swapped;2023-06-01
+7;my name;Demo German;mein Name;2023-06-01;1;swapped;2023-06-01
+8;my name;Demo Spanish;mi nomre;2023-06-01;1;swapped;2023-06-01
+9;Je suis;Demo French;I am;2023-06-01;1;;2023-06-01
+10;Je suis;Demo French;I am;2023-06-01;1;swapped;2023-06-01
+11;the house;Demo French;la maison;2023-06-01;1;;2023-06-01
+12;the house;Demo French;la maison;2023-06-01;1;swapped;2023-06-01
